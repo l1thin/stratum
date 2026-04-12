@@ -19,3 +19,6 @@ AI-powered image decomposition and PSD export tool.
 
 ## API Contract
 See /docs/API_CONTRACT.md
+
+## Changelog
+See /docs/CHANGELOG.md
