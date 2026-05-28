@@ -4,8 +4,5 @@ pillow
 opencv-python
 numpy
 pytesseract
-easyocr
-rembg
 psd-tools
 python-multipart
-pytest
