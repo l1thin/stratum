@@ -1,8 +1,8 @@
-fastapi
-uvicorn
-pillow
-opencv-python
-numpy
-pytesseract
-psd-tools
-python-multipart
+fastapi>=0.95.0
+uvicorn[standard]>=0.20.0
+Pillow>=9.0.0
+opencv-python>=4.5.0.52
+numpy>=1.23.0
+pytesseract>=0.3.10
+psd-tools>=1.17.1
+python-multipart>=0.0.6
