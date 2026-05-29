@@ -7,9 +7,12 @@ from fastapi import APIRouter, File, UploadFile, HTTPException, status
 from fastapi.responses import FileResponse, JSONResponse
 from PIL import Image
 
+import threading
+
 from models.job import update_job, job_store
 from utils.file_utils import get_job_dir
 from services.psd_generator import generate_psd
+from services.pipeline import run_pipeline
 
 router = APIRouter(prefix="/api")
 
@@ -41,6 +44,14 @@ async def upload(file: UploadFile = File(...)):
     image.save(original_path, format="PNG")
 
     update_job(job_id, status="queued", progress=0)
+
+    # Start background pipeline thread so upload returns immediately
+    try:
+        t = threading.Thread(target=run_pipeline, args=(job_id,), daemon=True)
+        t.start()
+    except Exception:
+        # If thread couldn't be started, mark as failed
+        update_job(job_id, status="failed", error="Failed to start background pipeline")
 
     return {"job_id": job_id, "status": "queued"}
 
