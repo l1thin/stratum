@@ -2,12 +2,13 @@ from io import BytesIO
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from PIL import Image
 
-from models.job import update_job
+from models.job import update_job, job_store
 from utils.file_utils import get_job_dir
+from services.psd_generator import generate_psd
 
 router = APIRouter(prefix="/api")
 
@@ -41,6 +42,16 @@ async def upload(file: UploadFile = File(...)):
     update_job(job_id, status="queued", progress=0)
 
     return {"job_id": job_id, "status": "queued"}
+
+
+@router.post("/generate_psd")
+async def generate_psd_endpoint(job_id: str):
+    """Generate PSD from /outputs/{job_id}/layers.json.
+    
+    Returns: { success: bool, psd_path: str, layer_count: int, file_size_kb: float }
+    """
+    result = generate_psd(job_id)
+    return result
 
 
 @router.get("/status/{job_id}")
