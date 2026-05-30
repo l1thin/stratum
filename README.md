@@ -1,24 +1,35 @@
 # Stratum
 AI-powered image decomposition and PSD export tool.
 
-## Team
-| Developer | Branch | Folder |
-|-----------|--------|--------|
-| Dev 1 — Frontend | frontend | /frontend |
-| Dev 2 — Backend  | backend  | /backend  |
+## Component layout
+- Backend service: `image-to-psd-backend`
+- Frontend: `frontend`
 
-## Branch Rules
-- Dev 1 commits ONLY inside /frontend
-- Dev 2 commits ONLY inside /backend
-- Both merge into main at the end of Sprint 5
-- API contract is frozen — do not edit without mutual agreement
+## Quick Start (backend)
 
-## Quick Start
-- Dev 1: git checkout frontend → work inside /frontend
-- Dev 2: git checkout backend → work inside /backend
+1. Create and activate a virtual environment:
 
-## API Contract
-See /docs/API_CONTRACT.md
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-## Changelog
-See /docs/CHANGELOG.md
+2. Install dependencies:
+
+```powershell
+pip install -r image-to-psd-backend/requirements.txt
+```
+
+3. Run the API server (from repo root):
+
+```powershell
+uvicorn image-to-psd-backend.main:app --reload --port 8000
+```
+
+## Useful docs
+- API contract and reference: `docs/API_CONTRACT.md`, `docs/API_REFERENCE.md`
+- PSD workflow and Photoshop import: `docs/USER_GUIDE_PSD_WORKFLOW.md`
+- User guide: `docs/USER_GUIDE.md`
+
+## Notes
+- The backend uses an in-memory job store for development. For production replace it with Redis or a database and run the pipeline in a worker process.
