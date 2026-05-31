@@ -237,7 +237,7 @@ input:checked + .slider:before {
 .panel-subtitle {
   font-size: 0.875rem;
   color: var(--text-secondary);
-  margin-top: -1rem;
+  margin-top: 0.35rem;
 }
 
 /* Upload Panel Styles */
