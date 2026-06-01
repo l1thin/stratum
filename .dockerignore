@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Python Virtual Environments & Packages
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.tox/
+*.egg-info/
+
+# Node/Frontend Build Artifacts
+node_modules/
+**/node_modules/
+frontend/dist/
+frontend/build/
+.npm/
+
+# IDE and Editor configs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+
+# Local Job Outputs & Temp Files
+image-to-psd-backend/outputs/
+outputs/
+*.log
+*.tmp

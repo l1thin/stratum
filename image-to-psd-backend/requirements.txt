@@ -1,8 +1,13 @@
 fastapi>=0.95.0
 uvicorn[standard]>=0.20.0
 Pillow>=9.0.0
-opencv-python>=4.5.0.52
+opencv-python-headless>=4.5.0.52
 numpy>=1.23.0
 pytesseract>=0.3.10
 psd-tools>=1.17.1
 python-multipart>=0.0.6
+rembg>=2.0.50
+easyocr>=1.7.1
+torch>=2.0.0
+torchvision>=0.15.0
+gunicorn>=21.2.0
