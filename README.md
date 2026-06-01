@@ -1,6 +1,8 @@
 # 🌌 Stratum
 
 > **AI-Powered Image Decomposition & Native Photoshop PSD Export Tool**
+> 
+> 🌐 **Live Demo**: [https://stratumimagetopsd.netlify.app/](https://stratumimagetopsd.netlify.app/)
 
 Stratum is a state-of-the-art web application designed to automatically decompose flat images into layered PSD assets. By leveraging deep learning models for background removal, contour-based object detection, and multi-engine OCR (Optical Character Recognition), Stratum splits any standard image into isolated background, foreground object, and native text layers.
 
