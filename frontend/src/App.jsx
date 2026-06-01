@@ -7,8 +7,8 @@ import LayerList from './components/LayerList';
 
 
 export default function App() {
-  // Demo Mode is active by default to give the user a working frontend demonstration instantly
-  const [demoMode, setDemoMode] = useState(true);
+  // Demo Mode is disabled by default to connect to the live API backend
+  const [demoMode, setDemoMode] = useState(false);
   
   // File and Preview States
   const [selectedFile, setSelectedFile] = useState(null);
@@ -249,6 +249,52 @@ export default function App() {
     }
   };
 
+  // Download Text Manifest JSON
+  const handleDownloadTextManifest = async () => {
+    if (!jobId) return;
+    showNotification('Downloading text_manifest.json...', 'info');
+    try {
+      const filename = `${selectedFile?.name ? selectedFile.name.split('.')[0] : 'design'}_text_manifest.json`;
+      if (demoMode) {
+        const mockManifest = [
+          { "text": "SYNTH", "conf": 96, "bbox": [120, 60, 880, 180] }
+        ];
+        const blob = new Blob([JSON.stringify(mockManifest, null, 2)], { type: 'application/json' });
+        api.triggerPSDDownload(blob, filename);
+        showNotification('Downloaded text_manifest.json!', 'success');
+      } else {
+        const fileBlob = await api.downloadTextManifest(jobId);
+        api.triggerPSDDownload(fileBlob, filename);
+        showNotification('Downloaded text_manifest.json!', 'success');
+      }
+    } catch (err) {
+      console.error(err);
+      showNotification(err.message || 'Failed to download text manifest.', 'error');
+    }
+  };
+
+  // Download Photoshop Import Script JSX
+  const handleDownloadImportScript = async () => {
+    if (!jobId) return;
+    showNotification('Downloading import_text_layers.jsx...', 'info');
+    try {
+      const filename = 'import_text_layers.jsx';
+      if (demoMode) {
+        const mockScript = 'alert("Mock script downloaded");';
+        const blob = new Blob([mockScript], { type: 'application/octet-stream' });
+        api.triggerPSDDownload(blob, filename);
+        showNotification('Downloaded import_text_layers.jsx!', 'success');
+      } else {
+        const fileBlob = await api.downloadImportScript(jobId);
+        api.triggerPSDDownload(fileBlob, filename);
+        showNotification('Downloaded import_text_layers.jsx!', 'success');
+      }
+    } catch (err) {
+      console.error(err);
+      showNotification(err.message || 'Failed to download Photoshop script.', 'error');
+    }
+  };
+
 
 
   return (
@@ -432,6 +478,8 @@ export default function App() {
                 selectedLayerId={selectedLayerId}
                 onLayerSelect={setSelectedLayerId}
                 onLayerHover={setHoveredLayerId}
+                downloadTextManifest={handleDownloadTextManifest}
+                downloadImportScript={handleDownloadImportScript}
               />
             </div>
           )}

@@ -69,7 +69,7 @@ def segment_background(job_id: str) -> dict:
             result_bytes = remove(buffer.read())
 
         segmented = Image.open(BytesIO(result_bytes)).convert("RGBA")
-    except Exception as exc:
+    except BaseException as exc:
         logger.warning("rembg segmentation failed for job %s: %s", job_id, exc)
         try:
             segmented = _grabcut_fallback(image)
