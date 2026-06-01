@@ -212,6 +212,38 @@ export const api = {
       handleError(error, `Failed to retrieve PSD file for job ID: ${jobId}`);
     }
   },
+
+  /**
+   * Downloads the text_manifest.json file for a job
+   * @param {string} jobId - The unique task job ID
+   * @returns {Promise<Blob>}
+   */
+  downloadTextManifest: async (jobId) => {
+    try {
+      const response = await apiClient.get(`/api/outputs/${jobId}/text_manifest.json`, {
+        responseType: 'blob',
+      });
+      return response.data;
+    } catch (error) {
+      handleError(error, `Failed to retrieve text manifest for job ID: ${jobId}`);
+    }
+  },
+
+  /**
+   * Downloads the import_text_layers.jsx file for a job
+   * @param {string} jobId - The unique task job ID
+   * @returns {Promise<Blob>}
+   */
+  downloadImportScript: async (jobId) => {
+    try {
+      const response = await apiClient.get(`/api/outputs/${jobId}/import_text_layers.jsx`, {
+        responseType: 'blob',
+      });
+      return response.data;
+    } catch (error) {
+      handleError(error, `Failed to retrieve Photoshop script for job ID: ${jobId}`);
+    }
+  },
 };
 
 export default {

@@ -67,7 +67,7 @@ async def generate_psd_endpoint(job_id: str):
 
 
 @router.get("/status/{job_id}")
-async def status(job_id: str):
+async def get_job_status(job_id: str):
     """Return job status and progress.
 
     Response: { job_id, status, progress }

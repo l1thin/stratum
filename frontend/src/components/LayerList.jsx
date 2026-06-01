@@ -15,7 +15,9 @@ export default function LayerList({
   downloading = false,
   selectedLayerId, 
   onLayerSelect, 
-  onLayerHover 
+  onLayerHover,
+  downloadTextManifest,
+  downloadImportScript
 }) {
   const [activeTab, setActiveTab] = useState('all'); // all | background | object | text
   const [brokenImages, setBrokenImages] = useState({});
@@ -254,6 +256,71 @@ export default function LayerList({
           </div>
         )}
       </div>
+
+      {/* Photoshop Integration Toolkit Section */}
+      {(downloadTextManifest || downloadImportScript) && (
+        <div className="export-section" style={{
+          borderTop: '1px solid var(--border-color)',
+          paddingTop: '1.25rem',
+          marginTop: '0.25rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.75rem'
+        }}>
+          <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)' }}>Photoshop Text Layer Toolset</h4>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+            Decompose text separate from raster images. Download the script and manifest, open the PSD in Photoshop, and run the script to rebuild editable TypeLayers.
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            {downloadTextManifest && (
+              <button
+                onClick={downloadTextManifest}
+                className="sample-trigger"
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.35rem',
+                  padding: '0.65rem',
+                  fontSize: '0.8rem',
+                  backgroundColor: 'rgba(255,255,255,0.02)'
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Text Manifest (.json)
+              </button>
+            )}
+            {downloadImportScript && (
+              <button
+                onClick={downloadImportScript}
+                className="sample-trigger"
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.35rem',
+                  padding: '0.65rem',
+                  fontSize: '0.8rem',
+                  backgroundColor: 'rgba(255,255,255,0.02)'
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                PS Script (.jsx)
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

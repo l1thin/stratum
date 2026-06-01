@@ -20,85 +20,136 @@
 #target photoshop
 app.bringToFront();
 
-// Step 1: Ask user to select the text_manifest.json file
-var file = File.openDialog("Select text_manifest.json", "JSON Files:*.json,All Files:*");
-if (!file) {
-    alert("No file selected. Exiting.");
-    $.quit();
+// Add JSON.parse shim if not natively supported by the Photoshop version
+if (typeof JSON === "undefined") {
+    JSON = {
+        parse: function(jsonStr) {
+            return eval("(" + jsonStr + ")");
+        }
+    };
 }
 
-// Step 2: Read JSON file
-var jsonText = "";
-if (file.open("r")) {
-    jsonText = file.read();
-    file.close();
-} else {
-    alert("Cannot read file: " + file);
-    $.quit();
+// Add Array.isArray shim if not natively supported by the Photoshop version
+if (!Array.isArray) {
+    Array.isArray = function(arg) {
+        return Object.prototype.toString.call(arg) === "[object Array]";
+    };
 }
 
-// Step 3: Parse JSON
-var textEntries = [];
-try {
-    textEntries = JSON.parse(jsonText);
-} catch (e) {
-    alert("Invalid JSON: " + e);
-    $.quit();
-}
-
-if (!Array.isArray(textEntries) || textEntries.length === 0) {
-    alert("No text entries found in JSON");
-    $.quit();
-}
-
-// Step 4: Check document is open
-if (app.documents.length === 0) {
-    alert("No PSD document open. Please open the PSD file first.");
-    $.quit();
-}
-
-var doc = app.activeDocument;
-
-// Step 5: Create text layers for each entry
-var createdLayers = 0;
-for (var i = 0; i < textEntries.length; i++) {
-    var entry = textEntries[i];
-    
-    // Validate entry
-    if (!entry.text || !entry.bbox || entry.bbox.length < 4) {
-        continue;  // Skip invalid entries
+function main() {
+    // Step 1: Ask user to select the text_manifest.json file
+    var file = File.openDialog("Select text_manifest.json", "JSON Files:*.json,All Files:*");
+    if (!file) {
+        alert("No file selected. Exiting.");
+        return;
     }
-    
-    var textContent = entry.text;
-    var bbox = entry.bbox;  // [left, top, right, bottom]
-    var left = bbox[0];
-    var top = bbox[1];
-    var right = bbox[2];
-    var bottom = bbox[3];
-    
+
+    // Step 2: Read JSON file
+    var jsonText = "";
+    if (file.open("r")) {
+        jsonText = file.read();
+        file.close();
+    } else {
+        alert("Cannot read file: " + file);
+        return;
+    }
+
+    // Step 3: Parse JSON
+    var textEntries = [];
     try {
-        // Create text layer
-        var textLayer = doc.artLayers.add();
-        textLayer.kind = LayerKind.TEXT;
-        textLayer.name = textContent.length > 30 ? textContent.substring(0, 30) : textContent;
-        
-        // Set text layer position
-        var textObject = textLayer.textItem;
-        textObject.contents = textContent;
-        textObject.position = [left, top];
-        textObject.width = Math.max(right - left, 10);
-        textObject.height = Math.max(bottom - top, 10);
-        
-        // Optional: Set text properties for consistency
-        textObject.size = Math.max(bottom - top - 4, 10);  // Font size based on bbox height
-        textObject.font = "Arial";
-        textObject.color.rgb.hexValue = "000000";  // Black text
-        
-        createdLayers++;
+        textEntries = JSON.parse(jsonText);
     } catch (e) {
-        // Skip text entries that fail
+        alert("Invalid JSON: " + e);
+        return;
     }
+
+    if (!Array.isArray(textEntries) || textEntries.length === 0) {
+        alert("No text entries found in JSON");
+        return;
+    }
+
+    // Step 4: Check document is open
+    if (app.documents.length === 0) {
+        alert("No PSD document open. Please open the PSD file first.");
+        return;
+    }
+
+    var doc = app.activeDocument;
+    
+    // Save original ruler units and set to PIXELS to ensure coordinates map correctly
+    var originalRulerUnits = app.preferences.rulerUnits;
+    app.preferences.rulerUnits = Units.PIXELS;
+
+    var createdLayers = 0;
+    try {
+        // Step 5: Create text layers for each entry
+        for (var i = 0; i < textEntries.length; i++) {
+            var entry = textEntries[i];
+            
+            // Validate entry
+            if (!entry.text || !entry.bbox || entry.bbox.length < 4) {
+                continue;  // Skip invalid entries
+            }
+            
+            var textContent = entry.text;
+            var bbox = entry.bbox;  // [left, top, right, bottom]
+            var left = bbox[0];
+            var top = bbox[1];
+            var right = bbox[2];
+            var bottom = bbox[3];
+            
+            try {
+                // Create text layer
+                var textLayer = doc.artLayers.add();
+                textLayer.kind = LayerKind.TEXT;
+                textLayer.name = textContent.length > 30 ? textContent.substring(0, 30) : textContent;
+                
+                // Get the textItem reference
+                var textObject = textLayer.textItem;
+                
+                // Set text kind to PARAGRAPHTEXT so width and height are supported
+                textObject.kind = TextType.PARAGRAPHTEXT;
+                textObject.contents = textContent;
+                
+                // Set text layer position and size using explicit UnitValue pixel types
+                textObject.position = [new UnitValue(left, "px"), new UnitValue(top, "px")];
+                textObject.width = new UnitValue(Math.max(right - left, 10), "px");
+                textObject.height = new UnitValue(Math.max(bottom - top, 10), "px");
+                
+                // Optional: Set font size based on bbox height
+                try {
+                    textObject.size = new UnitValue(Math.max(bottom - top - 4, 10), "px");
+                } catch (sizeErr) {}
+
+                // Optional: Set font to Arial/ArialMT
+                try {
+                    textObject.font = "ArialMT";
+                } catch (fontErr) {
+                    try {
+                        textObject.font = "Arial";
+                    } catch (fontErr2) {}
+                }
+
+                // Optional: Set text color to Black
+                try {
+                    var textColor = new SolidColor();
+                    textColor.rgb.hexValue = "000000";
+                    textObject.color = textColor;
+                } catch (colorErr) {}
+                
+                createdLayers++;
+            } catch (e) {
+                // Skip text entries that fail individually
+            }
+        }
+    } finally {
+        // Restore original ruler units
+        app.preferences.rulerUnits = originalRulerUnits;
+    }
+
+    // Step 6: Completion message
+    alert("Successfully created " + createdLayers + " text layers from " + textEntries.length + " entries.");
 }
 
-// Step 6: Completion message
-alert("Successfully created " + createdLayers + " text layers from " + textEntries.length + " entries.");
+// Run the script
+main();

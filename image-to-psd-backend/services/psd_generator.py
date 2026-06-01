@@ -109,5 +109,7 @@ def generate_psd(job_id: str) -> dict:
 
         return {"success": True, "psd_path": output_path, "layer_count": layer_count, "file_size_kb": file_size_kb}
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         update_job(job_id, status="failed", error=str(e))
         return {"success": False, "psd_path": "", "layer_count": 0, "file_size_kb": 0.0}
