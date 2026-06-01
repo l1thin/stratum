@@ -21,7 +21,7 @@ const getBaseUrl = () => {
   } catch (e) {
     // Silence reference errors for 'process' in strictly web-only contexts
   }
-  return 'http://localhost:5000';
+  return 'http://localhost:8000';
 };
 
 const API_BASE_URL = getBaseUrl();

@@ -3,3 +3,4 @@ venv/
 outputs/
 __pycache__/
 .env
+static/
