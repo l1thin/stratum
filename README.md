@@ -1,25 +1,64 @@
 # 🌌 Stratum
 
-> **AI-Powered Image Decomposition & Native Photoshop PSD Export Tool**
-> 
-> 🌐 **Live Demo**: [https://l1thin-stratum.hf.space/](https://l1thin-stratum.hf.space/)
+Stratum is an **open-source AI-powered image decomposition framework** designed to decompose flat graphics into layered PSD files with minimal engineering effort. By leveraging deep learning models for background removal, contour-based object detection, and multi-engine OCR (Optical Character Recognition), Stratum splits any standard image into isolated background, foreground object, and native text layers.
 
-Stratum is a state-of-the-art web application designed to automatically decompose flat images into layered PSD assets. By leveraging deep learning models for background removal, contour-based object detection, and multi-engine OCR (Optical Character Recognition), Stratum splits any standard image into isolated background, foreground object, and native text layers.
+⭐ **If you find Stratum useful, please consider giving us a star on GitHub! Your support helps us continue to innovate and deliver exciting features.**
+
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/l1thin/stratum)
+![Number of GitHub contributors](https://img.shields.io/github/contributors/l1thin/stratum)
+[![Number of GitHub issues that are open](https://img.shields.io/github/issues/l1thin/stratum)](https://github.com/l1thin/stratum/issues)
+[![Number of GitHub stars](https://img.shields.io/github/stars/l1thin/stratum)](https://github.com/l1thin/stratum/stargazers)
+![Number of GitHub closed issues](https://img.shields.io/github/issues-closed/l1thin/stratum)
+![Number of GitHub pull requests that are open](https://img.shields.io/github/issues-pr-raw/l1thin/stratum)
+![GitHub release; latest by date](https://img.shields.io/github/v/release/l1thin/stratum)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/l1thin/stratum)
+[![GitHub license](https://img.shields.io/github/license/l1thin/stratum)](https://github.com/l1thin/stratum)
+
+<p align="center">
+    <img src="docs/screenshots/dashboard_view.png" alt="Stratum web application dashboard" width="90%"/>
+</p>
+
+<p align="center">
+    <img src="docs/screenshots/layer_separation_view.png" alt="Stratum layer separation view" width="90%"/>
+</p>
+
+## All features
+
+- **Visual Dashboard:** Upload files (PNG, JPEG, WEBP) and preview the real-time decomposition results.
+- **AI Background Removal:** Powered by `rembg` (U-2-Net model) to isolate foreground graphics seamlessly.
+- **Dynamic GrabCut Fallback:** OpenCV GrabCut is initialized dynamically if the AI pipeline is offline.
+- **Object Contour Detection:** Automatic bounding-box localization using OpenCV contour mapping (`findContours`).
+- **Multi-Engine OCR:** Extract text layers via PyTesseract with a PyTorch-based EasyOCR fallback.
+- **Native PSD Export:** Directly package separated layers into a standard `.psd` workspace.
+- **Editable Photoshop TypeLayers:** Recreate 100% editable text assets natively using a custom ExtendScript JSX script.
+- **Unified Docker Architecture:** Multi-stage Dockerfile that packages React + FastAPI for one-click deployment.
+
+<hr>
+
+## Quickstart
+The easiest way to get started with Stratum is by visiting the hosted live environment:
+🌐 **Live Demo**: [https://l1thin-stratum.hf.space/](https://l1thin-stratum.hf.space/)
+
+### Try using Docker
+Want to give Stratum a quick spin on your local machine? You can build and run the Docker image from your terminal right away:
+
+```bash
+# Build the unified image
+docker build -t stratum .
+
+# Run the container locally
+docker run \
+  --name stratum \
+  --restart unless-stopped \
+  -p 7860:7860 \
+  stratum
+```
+
+Once running, access the web client at [http://localhost:7860](http://localhost:7860).
 
 ---
 
-## 🚀 Overview
-
-Decomposing a flat graphic design or image into layers is a tedious, manual chore. Stratum automates this process:
-1. **Upload**: User uploads an image (PNG, JPEG, WEBP).
-2. **AI Segmentation**: The pipeline isolates the background and extracts individual foreground objects.
-3. **OCR Text Extraction**: Text areas are identified, cropped, and recognized.
-4. **PSD Assembly**: A multi-layer `.psd` file is generated containing all isolated image elements.
-5. **Photoshop Import**: A custom ExtendScript imports the text manifest, rebuilding them as fully editable native TypeLayers.
-
----
-
-## 🏗️ Architecture
+## Architecture
 
 Stratum uses a decoupled **React client + FastAPI server** architecture.
 
@@ -48,14 +87,8 @@ graph TD
     J -->|Reads text_manifest.json| K[Editable Text Layers Rebuilt]
 ```
 
----
-
-## 🧠 AI & Computer Vision Usage
-
-Stratum utilizes specialized models for each layer-separation task:
-
+### AI & Computer Vision Pipeline Details
 *   **Background Removal (`rembg`)**: Powered by the **U-2-Net** deep learning model to separate salient foreground elements from the background.
-    *   *Fallback*: OpenCV's **GrabCut** algorithm is initialized dynamically if the deep learning environment is offline.
 *   **Object Isolation (OpenCV)**: Analyzes the alpha mask of the foreground, performs contour detection (`findContours`), and calculates bounding boxes to extract and crop isolated objects.
 *   **Text Detection & Recognition (OCR)**:
     *   **PyTesseract**: Wraps the Tesseract OCR engine (LSTM-based text recognizer) for high-speed character localization.
@@ -63,27 +96,30 @@ Stratum utilizes specialized models for each layer-separation task:
 
 ---
 
-## 📦 Modules & Dependencies
+## Tutorials and examples
 
-### Backend (Python)
-- **FastAPI & Uvicorn**: Async API routing and high-performance server.
-- **Pillow (PIL)**: Image editing, cropping, and thumbnail creation.
-- **psd-tools**: Low-level generation and structure assembly of PSD files.
-- **rembg**: Deep learning-based background removal.
-- **opencv-python-headless**: High-performance contour mapping and image math.
-- **pytesseract & easyocr**: Dual-engine OCR and text bounding box detection.
-- **PyTorch**: Deep learning backend for EasyOCR.
+[PSD Text Import Workflow](docs/PSD_TEXT_IMPORT_WORKFLOW.md)<br>
+[User Guide: Photoshop ExtendScript Flow](docs/USER_GUIDE_PSD_WORKFLOW.md)<br>
+[General User Guide](docs/USER_GUIDE.md)<br>
 
-### Frontend (React + Vite)
-- **React 19**: Modern component architecture.
-- **Axios**: Network request handler for communicating with the backend.
-- **Vite**: Rapid hot-reloading development server.
+## Documentation
+- [API Reference Guide](docs/API_REFERENCE.md)<br>
+- [API Contract Spec](docs/API_CONTRACT.md)<br>
+- [Changelog History](docs/CHANGELOG.md)<br>
 
----
+## Self-hosted
 
-## 🛠️ Requirements & System Setup
+You can use the Hugging Face hosted platform or self-host Stratum. We support Docker, local virtualenvs, and custom Cloud Runs.
 
-### Prerequisites
+| Provider  | Documentation |
+| :------------- | :------------- |
+| Hugging Face Spaces (Docker) | [Link](#-deployment-hugging-face-spaces-docker)  |
+| Local Docker  | [Link](#try-using-docker)   |
+| Manual Installation (Vite + Uvicorn) | [Link](#manual-installation-and-setup)  |
+
+### Manual Installation and Setup
+
+#### Prerequisites
 1.  **Python**: 3.11 or higher installed.
 2.  **Node.js**: v18.0.0 or higher.
 3.  **Tesseract OCR** *(Optional but recommended)*:
@@ -92,12 +128,7 @@ Stratum utilizes specialized models for each layer-separation task:
     *   **Linux**: Run `sudo apt-get install tesseract-ocr`.
 4.  **Adobe Photoshop**: Photoshop CC (for using the ExtendScript).
 
----
-
-## 💻 How to Run the Application
-
-### 1. Start the Backend API Server
-
+#### 1. Start the Backend API Server
 Navigate to the project root directory:
 
 ```powershell
@@ -118,8 +149,7 @@ $env:PYTHONPATH="image-to-psd-backend"; .\.venv\Scripts\uvicorn image-to-psd-bac
 ```
 The backend API documentation will be available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-### 2. Start the Frontend Client
-
+#### 2. Start the Frontend Client
 Navigate to the `frontend` directory in a new terminal window:
 
 ```bash
@@ -171,24 +201,29 @@ Since Photoshop's proprietary text-rendering engine (TypeLayers) is complex and 
 
 ---
 
-## 📸 Screenshots
+## Community support
+For general help using Stratum, please refer to the official documentation and user guides. For additional help, you can use these channels:
 
-Please see the screenshots below illustrating the Stratum interface and Photoshop import workflow.
+- [GitHub Issues](https://github.com/l1thin/stratum/issues) - For bug reports and feature requests.
+- [GitHub Pull Requests](https://github.com/l1thin/stratum/pulls) - To contribute code and report improvements.
 
-*(Note: Drag and drop your screenshots here or attach them when prompted)*
+## Roadmap
+Check out what features are planned for Stratum:
+- **SAM Integration:** Deep integration with Segment Anything Model (SAM) for complex semantic object mapping.
+- **Interactive Web Editor:** Bounding-box inspector to adjust, scale, and delete layer boundaries before export.
+- **Font Matcher:** Direct integration with Google Fonts to automatically pair matched OCR typography.
+- **Multi-canvas exporter:** Combine multiple image assets and decompose them into a single Photoshop layout.
 
-### 1. Web Application Dashboard
-![Web Application Dashboard](docs/screenshots/dashboard_view.png)
-*Upload and decomposition processing viewport.*
+## Branching model
+We use the git-flow branching model. The base branch is `develop`. Stable versions are tagged and released on the `main` branch.
 
-### 2. Layer Separation View
-![Layer Separation View](docs/screenshots/layer_separation_view.png)
-*Inspection of isolated background, object, and text components.*
+## Contributing
+Kindly open an issue or start a pull request on GitHub to suggest bug fixes, custom scripts, or additional features.
 
-### 3. Photoshop ExtendScript Execution
-<!-- USER_SCREENSHOT_PHOTOSHOP_IMPORT -->
-*Importing the JSON text manifest natively inside Photoshop.*
+## Contributors
+<a href="https://github.com/l1thin/stratum/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=l1thin/stratum&max=400&columns=20" />
+</a>
 
-### 4. Final Editable Result
-<!-- USER_SCREENSHOT_FINAL_PSD -->
-*Fully layered, editable PSD workspace.*
+## License
+Stratum © 2026, Lithin - Released under the MIT License.
