@@ -73,11 +73,18 @@ async def get_job_status(job_id: str):
     Response: { job_id, status, progress }
     Returns 404 if job_id is unknown.
     """
-    job = job_store.get(job_id)
-    if job is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
-    # Only return the requested fields
-    return {"job_id": job_id, "status": job.get("status"), "progress": job.get("progress", 0)}
+    try:
+        job = job_store.get(job_id)
+        if job is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+        # Only return the requested fields
+        return {"job_id": job_id, "status": job.get("status"), "progress": job.get("progress", 0)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Diagnostic error inside get_job_status: {e}")
 
 
 @router.get("/result/{job_id}")
