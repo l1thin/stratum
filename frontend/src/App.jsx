@@ -7,8 +7,8 @@ import LayerList from './components/LayerList';
 
 
 export default function App() {
-  // Demo Mode is enabled by default to explore the interface without a live backend
-  const [demoMode, setDemoMode] = useState(true);
+  // Demo Mode is disabled by default to run Live API Mode
+  const [demoMode, setDemoMode] = useState(false);
 
   // Active API base URL configuration
   const [apiUrl, setApiUrl] = useState(() => {
