@@ -18,8 +18,10 @@ RUN npm run build
 FROM python:3.11-slim AS backend-runner
 WORKDIR /app
 
-# Install system dependencies (Tesseract, OpenCV/graphics libraries)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install system dependencies (Tesseract, OpenCV/graphics libraries) with retry logic for network resilience
+RUN apt-get clean && \
+    (apt-get update || (sleep 5 && apt-get update)) && \
+    apt-get install -y --no-install-recommends \
     tesseract-ocr \
     libgl1-mesa-glx \
     libglib2.0-0 \
