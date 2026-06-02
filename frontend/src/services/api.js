@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Detect and extract the base URL from the environment config
-const getBaseUrl = () => {
+// Detect the default base URL from the build configuration
+export const getDefaultApiBaseUrl = () => {
   // If running in Vite development server, let proxy handle CORS route redirection
   if (import.meta.env && import.meta.env.DEV) {
     return ''; // Relative path utilizes Vite server proxy configuration
@@ -24,6 +24,19 @@ const getBaseUrl = () => {
   return 'http://localhost:8000';
 };
 
+// Resolve the active base URL, prioritizing localStorage configurations
+export const getBaseUrl = () => {
+  try {
+    const savedUrl = localStorage.getItem('STRATUM_API_URL');
+    if (savedUrl) {
+      return savedUrl;
+    }
+  } catch (e) {
+    // Ignore security/access errors for localStorage
+  }
+  return getDefaultApiBaseUrl();
+};
+
 const API_BASE_URL = getBaseUrl();
 const isDev = import.meta.env.DEV || false;
 
@@ -38,6 +51,24 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+export const setApiBaseUrl = (url) => {
+  try {
+    if (url) {
+      localStorage.setItem('STRATUM_API_URL', url);
+      apiClient.defaults.baseURL = url;
+    } else {
+      localStorage.removeItem('STRATUM_API_URL');
+      apiClient.defaults.baseURL = getBaseUrl();
+    }
+  } catch (e) {
+    console.error('Failed to set API base URL in localStorage', e);
+  }
+};
+
+export const getApiBaseUrl = () => {
+  return apiClient.defaults.baseURL;
+};
 
 /**
  * Custom error wrapper to format and log API connection errors in development mode
@@ -249,4 +280,7 @@ export const api = {
 export default {
   ...api,
   triggerPSDDownload,
+  setApiBaseUrl,
+  getApiBaseUrl,
+  getDefaultApiBaseUrl,
 };

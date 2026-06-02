@@ -9,6 +9,21 @@ import LayerList from './components/LayerList';
 export default function App() {
   // Demo Mode is enabled by default to explore the interface without a live backend
   const [demoMode, setDemoMode] = useState(true);
+
+  // Active API base URL configuration
+  const [apiUrl, setApiUrl] = useState(() => {
+    try {
+      return localStorage.getItem('STRATUM_API_URL') || '';
+    } catch (e) {
+      return '';
+    }
+  });
+
+  // Update backend URL configuration
+  const handleApiUrlChange = (value) => {
+    setApiUrl(value);
+    api.setApiBaseUrl(value);
+  };
   
   // File and Preview States
   const [selectedFile, setSelectedFile] = useState(null);
@@ -318,6 +333,34 @@ export default function App() {
         </div>
         
         <div className="header-actions">
+          {/* Backend API Configuration */}
+          {!demoMode && (
+            <div className="api-config" title="Configure the target backend URL. Clear to reset to default.">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: 'var(--text-secondary)'}}>
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                <line x1="6" y1="6" x2="6.01" y2="6"/>
+                <line x1="6" y1="18" x2="6.01" y2="18"/>
+              </svg>
+              <input 
+                type="text" 
+                className="api-url-input" 
+                placeholder={`API: ${api.getDefaultApiBaseUrl() || 'Relative Proxy'}`}
+                value={apiUrl}
+                onChange={(e) => handleApiUrlChange(e.target.value)}
+              />
+              {apiUrl && (
+                <button 
+                  className="api-reset-btn" 
+                  onClick={() => handleApiUrlChange('')}
+                  title="Reset to default URL"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Demo Mode Switch */}
           <div className="mode-toggle" title="Demo mode simulates backend API steps without requiring a live backend service.">
             <span>Demo Mode</span>

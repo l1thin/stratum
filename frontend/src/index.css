@@ -145,6 +145,57 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-secondary);
 }
 
+/* Backend URL Config Capsule */
+.api-config {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.5rem 1.0rem;
+  border-radius: 100px;
+  border: 1px solid var(--border-color);
+  transition: var(--transition-smooth);
+}
+
+.api-config:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.api-url-input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  outline: none;
+  width: 15rem;
+  font-weight: 500;
+}
+
+.api-url-input::placeholder {
+  color: var(--text-muted);
+}
+
+.api-reset-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  border-radius: 50%;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.api-reset-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .switch {
   position: relative;
   display: inline-block;
