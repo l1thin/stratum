@@ -53,5 +53,5 @@ ENV U2NET_HOME=/tmp/.u2net \
 EXPOSE 7860
 ENV PORT=7860
 
-# Start server using Gunicorn with Uvicorn workers for production performance
-CMD ["sh", "-c", "gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT}"]
+# Start server using Uvicorn directly to prevent worker watchdog timeout kills during heavy CPU tasks
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]
