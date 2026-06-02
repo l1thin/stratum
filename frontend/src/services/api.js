@@ -15,10 +15,10 @@ export const getDefaultApiBaseUrl = () => {
   }
   // Fallback to process.env for Node/CRA/Next.js compatibility
   try {
-    if (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE_URL) {
-      return process.env.REACT_APP_API_BASE_URL;
+    if (typeof globalThis !== 'undefined' && globalThis.process && globalThis.process.env && globalThis.process.env.REACT_APP_API_BASE_URL) {
+      return globalThis.process.env.REACT_APP_API_BASE_URL;
     }
-  } catch (e) {
+  } catch {
     // Silence reference errors for 'process' in strictly web-only contexts
   }
   
@@ -29,7 +29,7 @@ export const getDefaultApiBaseUrl = () => {
     if (window.location && window.location.hostname && window.location.hostname.endsWith('netlify.app')) {
       return 'http://localhost:8000';
     }
-  } catch (e) {
+  } catch {
     // Silence errors in environments without window context (e.g., SSR)
   }
 
@@ -43,7 +43,7 @@ export const getBaseUrl = () => {
     if (savedUrl) {
       return savedUrl;
     }
-  } catch (e) {
+  } catch {
     // Ignore security/access errors for localStorage
   }
   return getDefaultApiBaseUrl();
@@ -132,7 +132,7 @@ export const triggerPSDDownload = (blob, filename) => {
     if (isDev) {
       console.error('[Download Dev-Log] File download trigger failed:', error);
     }
-    throw new Error(`File download failed: ${error.message}`);
+    throw new Error(`File download failed: ${error.message}`, { cause: error });
   }
 };
 
