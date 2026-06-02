@@ -92,7 +92,7 @@ const handleError = (error, contextMessage) => {
 
   if (error.response) {
     // The server responded with a status code outside the 2xx range
-    message = error.response.data?.error || `Server responded with status: ${error.response.status}`;
+    message = error.response.data?.error || error.response.data?.detail || `Server responded with status: ${error.response.status}`;
   } else if (error.request) {
     // The request was made but no response was received
     message = 'No response received from the backend API. Please check your network connection.';
