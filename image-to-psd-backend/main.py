@@ -17,8 +17,9 @@ if origins_env:
         origins = [o.strip() for o in origins_env.split(",") if o.strip()]
         allow_credentials = True
 else:
-    origins = ["http://localhost:3000", "http://localhost:5173", "http://localhost:8000"]
-    allow_credentials = True
+    # Allow all origins by default to prevent CORS blockage for external deployments like Netlify/Vercel
+    origins = ["*"]
+    allow_credentials = False
 
 app.add_middleware(
     CORSMiddleware,
