@@ -7,8 +7,8 @@ import LayerList from './components/LayerList';
 
 
 export default function App() {
-  // Demo Mode is disabled by default to connect to the live API backend
-  const [demoMode, setDemoMode] = useState(false);
+  // Demo Mode is enabled by default to explore the interface without a live backend
+  const [demoMode, setDemoMode] = useState(true);
   
   // File and Preview States
   const [selectedFile, setSelectedFile] = useState(null);
