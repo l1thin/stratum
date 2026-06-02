@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from './services/api';
 import samplePoster from './assets/sample_poster.png';
 import UploadZone from './components/UploadZone';
@@ -14,7 +14,7 @@ export default function App() {
   const [apiUrl, setApiUrl] = useState(() => {
     try {
       return localStorage.getItem('STRATUM_API_URL') || '';
-    } catch (e) {
+    } catch {
       return '';
     }
   });
@@ -33,10 +33,8 @@ export default function App() {
   const [jobId, setJobId] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | uploading | queued | preprocessing | segmenting | ocr | assembling | done | failed
   const [progress, setProgress] = useState(0);
-  const [processingError, setProcessingError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  
   // Results and Layers States
   const [layers, setLayers] = useState([]);
   const [selectedLayerId, setSelectedLayerId] = useState(null);
@@ -58,9 +56,9 @@ export default function App() {
   }, [notification]);
 
   // Handle Notifications
-  const showNotification = (message, type = 'info') => {
+  const showNotification = useCallback((message, type = 'info') => {
     setNotification({ message, type });
-  };
+  }, []);
 
   // Helper to convert file size to readable format
   const formatBytes = (bytes, decimals = 2) => {
@@ -87,7 +85,6 @@ export default function App() {
     setLayers([]);
     setSelectedLayerId(null);
     setHoveredLayerId(null);
-    setProcessingError(null);
     setIsProcessing(false);
     setIsUploading(false);
   };
@@ -104,7 +101,7 @@ export default function App() {
       setSelectedFile(file);
       setPreviewUrl(samplePoster);
       showNotification('Loaded sample retro-synthwave poster!', 'success');
-    } catch (error) {
+    } catch {
       // Fallback: Use URL directly as preview, but mock file metadata
       setPreviewUrl(samplePoster);
       setSelectedFile({
@@ -125,7 +122,6 @@ export default function App() {
     setPreviewUrl(objectUrl);
 
     setIsProcessing(true);
-    setProcessingError(null);
     setLayers([]);
     
     if (demoMode) {
@@ -163,7 +159,6 @@ export default function App() {
       setIsUploading(false);
       setStatus('failed');
       setIsProcessing(false);
-      setProcessingError(err.message || 'API Upload failed.');
       showNotification('Backend not reachable. Please switch to Demo Mode to explore the interface.', 'error');
     }
   };
@@ -178,7 +173,7 @@ export default function App() {
   };
 
   // Callback triggered when ProcessingStatus successfully reaches 'done'
-  const handleDecompositionComplete = async (completedJobId) => {
+  const handleDecompositionComplete = useCallback(async (completedJobId) => {
     setStatus('done');
     setIsProcessing(false);
     setProgress(100);
@@ -233,12 +228,11 @@ export default function App() {
         showNotification('PSD layers successfully generated!', 'success');
       } catch (err) {
         console.error(err);
-        setProcessingError(err.message || 'Failed to fetch layers from backend.');
         setStatus('failed');
         showNotification('Failed fetching layers.', 'error');
       }
     }
-  };
+  }, [demoMode, showNotification]);
 
   // Download PSD File
   const handleDownloadPsd = async () => {

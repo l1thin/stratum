@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api';
 
 // Status list for step rendering
@@ -31,9 +31,17 @@ const STATUS_MESSAGES = {
  * @param {Function} props.onRetry - Callback fired when user clicks Retry on failure
  */
 export default function ProcessingStatus({ jobId, demoMode = true, onComplete, onRetry }) {
+  const [prevJobId, setPrevJobId] = useState(jobId);
   const [status, setStatus] = useState('queued');
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(5);
   const [errorMsg, setErrorMsg] = useState('');
+
+  if (jobId !== prevJobId) {
+    setPrevJobId(jobId);
+    setStatus('queued');
+    setProgress(5);
+    setErrorMsg('');
+  }
 
   useEffect(() => {
     let intervalId = null;
@@ -43,11 +51,6 @@ export default function ProcessingStatus({ jobId, demoMode = true, onComplete, o
     if (isDev) {
       console.log(`[Interval Trace] Initialized polling loop for job ID: ${jobId}`);
     }
-
-    // Reset local states for new jobId
-    setStatus('queued');
-    setProgress(5);
-    setErrorMsg('');
 
     if (demoMode) {
       // --- DEMO MODE: Local Simulation ---
@@ -138,7 +141,7 @@ export default function ProcessingStatus({ jobId, demoMode = true, onComplete, o
         clearInterval(intervalId);
       }
     };
-  }, [jobId, demoMode]);
+  }, [jobId, demoMode, onComplete]);
 
   const isFailed = status === 'failed';
   const isDone = status === 'done';
