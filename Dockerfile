@@ -16,6 +16,7 @@ RUN npm run build
 # Stage 2: Create the Python Runner
 # ==========================================
 FROM python:3.11-slim AS backend-runner
+USER root
 WORKDIR /app
 
 # Install system dependencies (Tesseract, OpenCV/graphics libraries) with retry logic for network resilience
