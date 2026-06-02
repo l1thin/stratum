@@ -11,6 +11,11 @@ Endpoints
 	- Response: `200` `{ "job_id": "<uuid>", "status": "queued" }`
 	- Starts a background pipeline that performs segmentation, detection, OCR, manifest assembly and PSD generation.
 
+- POST `/api/generate_psd`
+	- Query parameter: `job_id` (string)
+	- Response: `200` `{ "success": true, "psd_path": "<path>", "layer_count": <int>, "file_size_kb": <float> }`
+	- Manually triggers PSD assembly and compilation from the compiled `layers.json` manifest.
+
 - GET `/api/status/{job_id}`
 	- Response: `200` `{ "job_id": "<id>", "status": "queued|preprocessing|segmenting|segmented|ocr|assembling|done|failed", "progress": <0-100> }`
 	- `404` if job not found
@@ -29,6 +34,10 @@ Endpoints
 - GET `/api/outputs/{job_id}/{file_path}`
 	- Serves static artifacts produced by the pipeline (thumbnails, intermediate PNGs, `text_manifest.json`, etc.).
 	- `404` if file not found, `403` for forbidden/path traversal attempts.
+
+- GET `/api/health`
+	- Response: `200` `{ "status": "ok" }`
+	- Service health check endpoint.
 
 Notes
 
