@@ -36,12 +36,18 @@ COPY image-to-psd-backend/ ./
 # Copy built frontend static assets from Stage 1 into the backend's static directory
 COPY --from=frontend-builder /app/frontend/dist ./static
 
-# Ensure outputs directory exists
-RUN mkdir -p outputs
+# Ensure outputs directory exists and is writable by any user
+RUN mkdir -p outputs && chmod 777 outputs
+
+# Set writable cache directories for AI models (rembg, EasyOCR, torch)
+ENV U2NET_HOME=/tmp/.u2net \
+    EASYOCR_MODULE_PATH=/tmp/.EasyOCR \
+    TORCH_HOME=/tmp/.torch \
+    NUMBA_CACHE_DIR=/tmp
 
 # Expose server port (FastAPI default, overridden dynamically by cloud hosts via $PORT)
-EXPOSE 8000
-ENV PORT=8000
+EXPOSE 7860
+ENV PORT=7860
 
 # Start server using Gunicorn with Uvicorn workers for production performance
 CMD ["sh", "-c", "gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT}"]
