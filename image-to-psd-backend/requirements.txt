@@ -7,6 +7,7 @@ pytesseract>=0.3.10
 psd-tools>=1.17.1
 python-multipart>=0.0.6
 rembg>=2.0.50
+onnxruntime>=1.15.0
 easyocr>=1.7.1
 torch>=2.0.0
 torchvision>=0.15.0
