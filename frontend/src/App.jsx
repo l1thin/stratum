@@ -16,10 +16,11 @@ export default function App() {
   
   // Job and Processing States
   const [jobId, setJobId] = useState(null);
-  const [status, setStatus] = useState('idle'); // idle | queued | preprocessing | segmenting | ocr | assembling | done | failed
+  const [status, setStatus] = useState('idle'); // idle | uploading | queued | preprocessing | segmenting | ocr | assembling | done | failed
   const [progress, setProgress] = useState(0);
   const [processingError, setProcessingError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   // Results and Layers States
   const [layers, setLayers] = useState([]);
@@ -73,6 +74,7 @@ export default function App() {
     setHoveredLayerId(null);
     setProcessingError(null);
     setIsProcessing(false);
+    setIsUploading(false);
   };
 
   // Quick-load the pre-generated Synthwave Sample Poster
@@ -131,20 +133,23 @@ export default function App() {
     if (!file) return;
 
     try {
-      setStatus('queued');
+      setIsUploading(true);
+      setStatus('uploading');
       setProgress(5);
       showNotification('Uploading image to Stratum AI backend...', 'info');
-      
+
       const uploadRes = await api.uploadImage(file);
+      setIsUploading(false);
       setJobId(uploadRes.job_id);
       setStatus(uploadRes.status || 'queued');
       showNotification(`Upload successful! Job ID: ${uploadRes.job_id}`, 'success');
     } catch (err) {
       console.error(err);
+      setIsUploading(false);
       setStatus('failed');
       setIsProcessing(false);
       setProcessingError(err.message || 'API Upload failed.');
-      showNotification('Connection failed. Verify API endpoint or switch to Demo Mode.', 'error');
+      showNotification('Backend not reachable. Please switch to Demo Mode to explore the interface.', 'error');
     }
   };
 
@@ -397,12 +402,27 @@ export default function App() {
 
           {/* Processing Tracker Overlay */}
           {status !== 'idle' && status !== 'done' && (
-            <ProcessingStatus 
-              jobId={jobId} 
-              demoMode={demoMode} 
-              onComplete={handleDecompositionComplete} 
-              onRetry={startDecomposition} 
-            />
+            isUploading ? (
+              <div className="process-tracker" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div className="progress-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div className="loading-spinner" style={{ borderColor: 'rgba(99, 102, 241, 0.2)', borderTopColor: 'var(--color-primary)' }}></div>
+                    <span className="progress-label" style={{ fontWeight: 600 }}>Uploading image...</span>
+                  </div>
+                  <span className="progress-percentage" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>{progress}%</span>
+                </div>
+                <div className="progress-bar-container">
+                  <div className="progress-bar-fill" style={{ width: `${progress}%`, background: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))' }}></div>
+                </div>
+              </div>
+            ) : (
+              <ProcessingStatus
+                jobId={jobId}
+                demoMode={demoMode}
+                onComplete={handleDecompositionComplete}
+                onRetry={startDecomposition}
+              />
+            )
           )}
         </section>
 
