@@ -2,7 +2,7 @@
 
 > **AI-Powered Image Decomposition & Native Photoshop PSD Export Tool**
 > 
-> 🌐 **Live Demo**: [https://stratumimagetopsd.netlify.app/](https://stratumimagetopsd.netlify.app/)
+> 🌐 **Live Demo**: [https://l1thin-stratum.hf.space/](https://l1thin-stratum.hf.space/)
 
 Stratum is a state-of-the-art web application designed to automatically decompose flat images into layered PSD assets. By leveraging deep learning models for background removal, contour-based object detection, and multi-engine OCR (Optical Character Recognition), Stratum splits any standard image into isolated background, foreground object, and native text layers.
 
@@ -22,6 +22,8 @@ Decomposing a flat graphic design or image into layers is a tedious, manual chor
 ## 🏗️ Architecture
 
 Stratum uses a decoupled **React client + FastAPI server** architecture.
+
+In development, these run as separate servers. In production, they are packaged into a single unified Docker container, where the FastAPI server compiles and hosts the React client statically, enabling zero-config deployment.
 
 ```mermaid
 graph TD
@@ -131,6 +133,29 @@ npm install
 npm run dev
 ```
 Open your browser and navigate to [http://localhost:5173/](http://localhost:5173/).
+
+---
+
+## 🌐 Deployment (Hugging Face Spaces Docker)
+
+Stratum is designed to be easily containerized and deployed as a unified application. Hugging Face Spaces is the recommended platform for hosting, as it provides a free 16GB RAM CPU runtime which is ideal for running the AI models (`rembg` and `EasyOCR` with `PyTorch`).
+
+### How to Deploy:
+1. Create a new **Space** on Hugging Face.
+2. Select **Docker** as the SDK (use **Blank** template).
+3. Clone the Space repository and copy the project files (`Dockerfile`, `.dockerignore`, `frontend/`, `image-to-psd-backend/`) into it.
+4. **Git LFS**: Since the frontend contains large image assets, make sure Git LFS is initialized in the Space repository and tracking is enabled for images:
+   ```bash
+   git lfs install
+   git lfs track "*.png" "*.jpg" "*.jpeg"
+   ```
+5. Commit and push the changes:
+   ```bash
+   git add .
+   git commit -m "Deploy Stratum"
+   git push origin main
+   ```
+6. Hugging Face will automatically build and run the Docker container. Once live, the app will be accessible at `https://<your-username>-stratum.hf.space` and will automatically connect to its own backend out-of-the-box.
 
 ---
 
