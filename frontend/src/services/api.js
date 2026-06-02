@@ -21,7 +21,19 @@ export const getDefaultApiBaseUrl = () => {
   } catch (e) {
     // Silence reference errors for 'process' in strictly web-only contexts
   }
-  return 'http://localhost:8000';
+  
+  // Intelligent platform fallback:
+  // If we are running on a static hosting platform (e.g. Netlify), we assume a separate local backend.
+  // Otherwise, if served on a unified host (e.g. Hugging Face Spaces or Render), we use relative paths.
+  try {
+    if (window.location && window.location.hostname && window.location.hostname.endsWith('netlify.app')) {
+      return 'http://localhost:8000';
+    }
+  } catch (e) {
+    // Silence errors in environments without window context (e.g., SSR)
+  }
+
+  return ''; // Default to relative paths for unified containers
 };
 
 // Resolve the active base URL, prioritizing localStorage configurations
