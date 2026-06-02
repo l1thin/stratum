@@ -75,6 +75,11 @@ export default function ProcessingStatus({ jobId, demoMode = true, onComplete, o
 
     } else {
       // --- LIVE API MODE: Backend Polling ---
+      if (!jobId) {
+        // jobId not yet assigned (upload still in progress); wait for it
+        return;
+      }
+
       const pollBackend = async () => {
         try {
           if (isDev) {
