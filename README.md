@@ -217,7 +217,7 @@ Check out what features are planned for Stratum:
 We use the git-flow branching model. The base branch is `develop`. Stable versions are tagged and released on the `main` branch.
 
 ## Contributing
-Kindly open an issue or start a pull request on GitHub to suggest bug fixes, custom scripts, or additional features.
+Kindly open an issue or start a pull request on GitHub to suggest bug fixes, custom scripts, or additional features. Please also read and adhere to our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Contributors
 <a href="https://github.com/l1thin/stratum/graphs/contributors">
