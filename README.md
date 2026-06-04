@@ -1,6 +1,6 @@
 # 🌌 Stratum
 
-Stratum is an **open-source AI-powered image decomposition framework** designed to decompose flat graphics into layered PSD files with minimal engineering effort. By leveraging deep learning models for background removal, contour-based object detection, and multi-engine OCR (Optical Character Recognition), Stratum splits any standard image into isolated background, foreground object, and native text layers.
+Stratum is an **AI-powered image decomposition framework** designed to decompose flat graphics into layered PSD files with minimal engineering effort. By leveraging deep learning models for background removal, contour-based object detection, and multi-engine OCR (Optical Character Recognition), Stratum splits any standard image into isolated background, foreground object, and native text layers.
 
 ⭐ **If you find Stratum useful, please consider giving us a star on GitHub! Your support helps us continue to innovate and deliver exciting features.**
 
@@ -12,7 +12,6 @@ Stratum is an **open-source AI-powered image decomposition framework** designed 
 ![Number of GitHub pull requests that are open](https://img.shields.io/github/issues-pr-raw/l1thin/stratum)
 ![GitHub release; latest by date](https://img.shields.io/github/v/release/l1thin/stratum)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/l1thin/stratum)
-[![GitHub license](https://img.shields.io/github/license/l1thin/stratum)](https://github.com/l1thin/stratum)
 
 <p align="center">
     <img src="docs/screenshots/dashboard_view.png" alt="Stratum web application dashboard" width="90%"/>
@@ -226,4 +225,4 @@ Kindly open an issue or start a pull request on GitHub to suggest bug fixes, cus
 </a>
 
 ## License
-Stratum © 2026, Lithin - Released under the MIT License.
+Stratum © 2026, Lithin - All rights reserved. You must obtain explicit permission from the author to use this project.
