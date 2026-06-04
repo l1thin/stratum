@@ -205,6 +205,7 @@ For general help using Stratum, please refer to the official documentation and u
 
 - [GitHub Issues](https://github.com/l1thin/stratum/issues) - For bug reports and feature requests.
 - [GitHub Pull Requests](https://github.com/l1thin/stratum/pulls) - To contribute code and report improvements.
+- [Security Policy](SECURITY.md) - For reporting security vulnerabilities.
 
 ## Roadmap
 Check out what features are planned for Stratum:
