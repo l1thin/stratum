@@ -1,3 +1,12 @@
+---
+title: Stratum
+emoji: 🌌
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 # 🌌 Stratum
 
 Stratum is an **AI-powered image decomposition framework** designed to decompose flat graphics into layered PSD files with minimal engineering effort. By leveraging deep learning models for background removal, contour-based object detection, and multi-engine OCR (Optical Character Recognition), Stratum splits any standard image into isolated background, foreground object, and native text layers.
