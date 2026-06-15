@@ -142,13 +142,14 @@ export const api = {
    * @param {File} file - Selected raster or generative design file
    * @returns {Promise<{ job_id: string, status: string }>}
    */
-  uploadImage: async (file) => {
+  uploadImage: async (file, format = 'psd') => {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('format', format);
 
       if (isDev) {
-        console.log(`[API Trace] Uploading file: ${file.name} (${file.size} bytes)`);
+        console.log(`[API Trace] Uploading file: ${file.name} (${file.size} bytes) with format: ${format}`);
       }
 
       const response = await apiClient.post('/api/upload', formData, {
