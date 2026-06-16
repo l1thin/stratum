@@ -3,7 +3,7 @@ from pathlib import Path
 from uuid import uuid4
 import json
 
-from fastapi import APIRouter, File, UploadFile, Form, HTTPException, status
+from fastapi import APIRouter, File, UploadFile, HTTPException, status
 from fastapi.responses import FileResponse, JSONResponse
 from PIL import Image
 
@@ -22,7 +22,7 @@ MAX_DIMENSION = 2048
 
 
 @router.post("/upload")
-async def upload(file: UploadFile = File(...), format: str = Form("psd")):
+async def upload(file: UploadFile = File(...)):
     if file.content_type not in ALLOWED_TYPES:
         return JSONResponse(status_code=400, content={"error": "Invalid file type"})
 
@@ -43,24 +43,11 @@ async def upload(file: UploadFile = File(...), format: str = Form("psd")):
     original_path = job_dir / "original.png"
     image.save(original_path, format="PNG")
 
-    formats = [f.strip().lower() for f in format.split(",") if f.strip()]
-    if "all" in formats:
-        formats = ["psd", "png", "svg"]
-    
-    allowed = {"psd", "png", "svg"}
-    for f in formats:
-        if f not in allowed:
-            return JSONResponse(status_code=400, content={"error": f"Invalid format: {f}"})
-            
-    if not formats:
-        formats = ["psd"]
-
     update_job(job_id, status="queued", progress=0)
-    job_store[job_id]["formats"] = formats
 
     # Start background pipeline thread so upload returns immediately
     try:
-        t = threading.Thread(target=run_pipeline, args=(job_id, formats), daemon=True)
+        t = threading.Thread(target=run_pipeline, args=(job_id,), daemon=True)
         t.start()
     except Exception:
         # If thread couldn't be started, mark as failed
@@ -164,62 +151,14 @@ async def download(job_id: str):
     if job.get("status") != "done":
         return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content={"status": "processing"})
 
-    formats = job.get("formats", ["psd"])
-    job_dir = Path(get_job_dir(job_id))
-    
-    # Preserve backwards compatibility: if only PSD is requested, return it raw
-    if formats == ["psd"]:
-        psd_path = job_dir / "result.psd"
-        if not psd_path.exists():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="PSD export not available")
+    psd_path = Path(get_job_dir(job_id)) / "result.psd"
+    if not psd_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="PSD export not available")
 
-        headers = {"Content-Disposition": f"attachment; filename={psd_path.name}"}
-        return FileResponse(
-            str(psd_path),
-            media_type="application/octet-stream",
-            headers=headers,
-        )
-
-    # For multiple formats or formats other than just PSD, bundle everything requested into a ZIP
-    import zipfile
-    import tempfile
-    
-    zip_path = job_dir / "bundle.zip"
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-        if "psd" in formats:
-            psd = job_dir / "result.psd"
-            if psd.exists():
-                zf.write(psd, arcname="result.psd")
-        
-        if "svg" in formats:
-            svg = job_dir / "result.svg"
-            if svg.exists():
-                zf.write(svg, arcname="result.svg")
-                
-        if "png" in formats:
-            png_dir = job_dir / "png_export"
-            if png_dir.exists() and png_dir.is_dir():
-                for item in png_dir.rglob("*"):
-                    if item.is_file():
-                        arcname = f"png_export/{item.relative_to(png_dir)}"
-                        zf.write(item, arcname=arcname)
-                        
-        # Include manifests as helpful additions to the bundle
-        text_manifest = job_dir / "text_manifest.json"
-        if text_manifest.exists():
-            zf.write(text_manifest, arcname="text_manifest.json")
-            
-        jsx = job_dir / "import_text_layers.jsx"
-        if jsx.exists():
-            zf.write(jsx, arcname="import_text_layers.jsx")
-
-    if not zip_path.exists():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No exports available to download")
-
-    headers = {"Content-Disposition": "attachment; filename=bundle.zip"}
+    headers = {"Content-Disposition": f"attachment; filename={psd_path.name}"}
     return FileResponse(
-        str(zip_path),
-        media_type="application/zip",
+        str(psd_path),
+        media_type="application/octet-stream",
         headers=headers,
     )
 
