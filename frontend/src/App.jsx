@@ -40,17 +40,6 @@ export default function App() {
   const [selectedLayerId, setSelectedLayerId] = useState(null);
   const [hoveredLayerId, setHoveredLayerId] = useState(null);
   const [downloading, setDownloading] = useState(false);
-  const [selectedFormats, setSelectedFormats] = useState(['psd']);
-  
-  const handleFormatToggle = (fmt) => {
-    setSelectedFormats(prev => {
-      if (prev.includes(fmt)) {
-        if (prev.length === 1) return prev; // Keep at least one format
-        return prev.filter(f => f !== fmt);
-      }
-      return [...prev, fmt];
-    });
-  };
   
   // Notification states
   const [notification, setNotification] = useState(null);
@@ -160,7 +149,7 @@ export default function App() {
       setProgress(5);
       showNotification('Uploading image to Stratum AI backend...', 'info');
 
-      const uploadRes = await api.uploadImage(file, selectedFormats.join(','));
+      const uploadRes = await api.uploadImage(file);
       setIsUploading(false);
       setJobId(uploadRes.job_id);
       setStatus(uploadRes.status || 'queued');
@@ -245,35 +234,32 @@ export default function App() {
     }
   }, [demoMode, showNotification]);
 
-  // Download Final Bundle / PSD
+  // Download PSD File
   const handleDownloadPsd = async () => {
     setDownloading(true);
-    const isBundle = selectedFormats.length > 1 || !selectedFormats.includes('psd');
-    const label = isBundle ? 'Bundle' : 'PSD';
-    const ext = isBundle ? 'zip' : 'psd';
-    showNotification(`Preparing ${label} download...`, 'info');
+    showNotification('Preparing PSD file download...', 'info');
 
     try {
-      const filename = `${selectedFile?.name ? selectedFile.name.split('.')[0] : 'design'}_reconstructed.${ext}`;
+      const filename = `${selectedFile?.name ? selectedFile.name.split('.')[0] : 'design'}_reconstructed.psd`;
       if (demoMode) {
-        // Simulate creation
+        // Simulate PSD creation as a text blob containing mock bytes
         setTimeout(() => {
-          const fakeContent = 'Mock binary data';
-          const blob = new Blob([fakeContent], { type: 'application/octet-stream' });
+          const fakePsdContent = '8BPS\x00\x01\x00\x00\x00\x00\x00\x00... [Stratum PSD Layer Export Binary]';
+          const blob = new Blob([fakePsdContent], { type: 'application/octet-stream' });
           api.triggerPSDDownload(blob, filename);
           setDownloading(false);
-          showNotification(`${label} downloaded successfully!`, 'success');
+          showNotification('PSD downloaded successfully!', 'success');
         }, 1500);
       } else {
         const fileBlob = await api.downloadPSD(jobId);
         api.triggerPSDDownload(fileBlob, filename);
         setDownloading(false);
-        showNotification(`${label} downloaded successfully!`, 'success');
+        showNotification('PSD downloaded successfully!', 'success');
       }
     } catch (err) {
       console.error(err);
       setDownloading(false);
-      showNotification(err.message || `Failed to download ${label}. Try again.`, 'error');
+      showNotification(err.message || 'Failed to download PSD file. Try again.', 'error');
     }
   };
 
@@ -416,25 +402,11 @@ export default function App() {
                 onSubmit={handleUploadZoneSubmit} 
                 onReset={resetState} 
               />
-              <div className="format-selector" style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '0.5rem'}}>
-                <span style={{fontSize: '0.9rem', color: 'var(--text-secondary)'}}>Export Formats:</span>
-                {['psd', 'png', 'svg'].map(fmt => (
-                  <label key={fmt} style={{display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.9rem', cursor: 'pointer', userSelect: 'none'}}>
-                    <input 
-                      type="checkbox" 
-                      checked={selectedFormats.includes(fmt)} 
-                      onChange={() => handleFormatToggle(fmt)} 
-                      style={{accentColor: 'var(--color-primary)'}}
-                    />
-                    {fmt.toUpperCase()}
-                  </label>
-                ))}
-              </div>
               <button 
                 type="button" 
                 className="sample-trigger" 
                 onClick={loadSampleImage}
-                style={{ width: '100%', marginTop: '0.5rem' }}
+                style={{ width: '100%', marginTop: '-0.5rem' }}
               >
                 Use Sample Synthwave Image
               </button>
