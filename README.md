@@ -37,7 +37,7 @@ Stratum is an **AI-powered image decomposition framework** designed to decompose
 
 ## Quickstart
 The easiest way to get started with Stratum is by visiting the hosted live environment:
-🌐 **Live Demo**: [https://l1thin-stratum.hf.space/](https://l1thin-stratum.hf.space/)
+🌐 **Live Demo**: [https://l1thin.github.io/stratum/](https://l1thin.github.io/stratum/)
 
 ### Try using Docker
 Want to give Stratum a quick spin on your local machine? You can build and run the Docker image from your terminal right away:
